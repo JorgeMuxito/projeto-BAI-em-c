@@ -5,7 +5,7 @@
 #include<stdbool.h>
 #include<time.h>
 
-//__Cristovão e Jorge
+//__CristovÃ£o e Jorge
 
 FILE *ficheiro;
 
@@ -40,13 +40,13 @@ void continuar (){
 }
 void cabecalho (){
 	printf("\t\n-----------------------------------------------------------");
-	printf("\t\t\n SISTEMA DE GESTÃO BANCO BAI \n\tBAI CONFIANÇA NO FUTURO ");
+	printf("\t\t\n SISTEMA DE GESTÃƒO BANCO BAI \n\tBAI CONFIANÃ‡A NO FUTURO ");
 	 mostrar_data();
 	printf("\t\n-------------------------------------------------------\t\n");
 }
 void menu (){
 
-	printf(" \t\n (1)-cadastrar clientes \t\n (2)-Listar Clientes clientes \t\n (3)-Abertura de Conta  \t\n (4)-Depositar Dinheiro \t\n (5)-Levantar Dinheiro\t\n (6)-Consultar Saldo\t\n (7)-Transfeir Dinheiro \t\n (8)-Atualizar Dados \t\n (9)-Terminar Sessão \t\n Escolha uma opcao:");
+	printf(" \t\n (1)-cadastrar clientes \t\n (2)-Listar Clientes clientes \t\n (3)-Abertura de Conta  \t\n (4)-Depositar Dinheiro \t\n (5)-Levantar Dinheiro\t\n (6)-Consultar Saldo\t\n (7)-Transfeir Dinheiro \t\n (8)-Atualizar Dados \t\n (9)-Terminar SessÃ£o \t\n Escolha uma opcao:");
 
 }
 
@@ -71,7 +71,7 @@ void Listar_Clientes (){
 			if (clientes[i].tipo_cliente==0){
 				printf("\t\nCodigo:%d ",clientes[i].codigo_cliente);
 				printf("\nNome:%s ",clientes[i].nome);
-				printf("\nNº DE Identificacao (B.I):%s",clientes[i].bi);
+				printf("\nNÂº DE Identificacao (B.I):%s",clientes[i].bi);
 				printf("\nTelefone: %d",clientes[i].telefone);
 				printf("\nIdade:%d ", clientes[i].idade);
 				printf("\nMorada:%s ",clientes[i].morada);
@@ -235,7 +235,7 @@ int main (){
 	char login[10], senha[10];
     bool A;
 	do{
-        printf("\t\n        BAI CONFIANÇA NO FUTURO              ");
+        printf("\t\n        BAI CONFIANÃ‡A NO FUTURO              ");
         printf("\n\tLogin:    ");
         fflush(stdin);
         scanf("%s", login);
@@ -268,7 +268,7 @@ int main (){
 						printf(" Nome: ");
 					    fflush(stdin);
 						scanf("%[^\n]",p.nome);
-						printf(" Nº Identificacao do BI: ");
+						printf(" NÂº Identificacao do BI: ");
 						fflush(stdin);
 						scanf("%[^\n]",p.bi);
 						printf(" Telefone: ");
@@ -392,7 +392,7 @@ int main (){
 
 				printf(" Digite o seu numero de conta:");
 				scanf("%d",&c1);
-				printf(" Digite o numero de conta do Destinatário:");
+				printf(" Digite o numero de conta do DestinatÃ¡rio:");
 				scanf("%d",&c2);
 			    printf("Digite o montante: ");
 				scanf("%f",&saldo);
@@ -449,7 +449,7 @@ int main (){
 					  	    	printf("novo nome: ");
 					  	    	 fflush(stdin);
 					  	    	scanf("%[^\n]",clientes[i].nome);
-					  	    	printf( "\tOBS: Informação Editada com sucesso com Sucesso, deseja editar mais alguma coisa? (1/0)\n");
+					  	    	printf( "\tOBS: InformaÃ§Ã£o Editada com sucesso com Sucesso, deseja editar mais alguma coisa? (1/0)\n");
 						        scanf("%d",&repete);
 					        	  switch (repete){
 					        	  	case 1:
@@ -460,7 +460,7 @@ int main (){
 
 								default:
 
-								printf("\tDigite uma opção Valida");
+								printf("\tDigite uma opÃ§Ã£o Valida");
 
 								  }
 
@@ -469,7 +469,7 @@ int main (){
 					  	    	printf(" Novo BI/NIF: ");
 					  	    	fflush(stdin);
 					  	    	scanf("%[^\n]",clientes[i].bi);
-					  	    	printf( "\tOBS: Informação Editada com sucesso com Sucesso, deseja editar mais alguma coisa? (1/0)\n");
+					  	    	printf( "\tOBS: InformaÃ§Ã£o Editada com sucesso com Sucesso, deseja editar mais alguma coisa? (1/0)\n");
 						        scanf("%d",&repete);
 					        	  switch (repete){
 					        	  	case 1:
@@ -480,7 +480,7 @@ int main (){
 
 								default:
 
-								printf("\tDigite uma opção Valida");
+								printf("\tDigite uma opÃ§Ã£o Valida");
 
 								  }
 					  	      	break;
@@ -488,7 +488,7 @@ int main (){
 					  	    case 3:
 					  	    	printf("Novo contacto: ");
 					  	    	scanf("%d",&clientes[i].telefone);
-					  	    		printf( "\tOBS: Informação Editada com sucesso com Sucesso, deseja editar mais alguma coisa? (1/0)\n");
+					  	    		printf( "\tOBS: InformaÃ§Ã£o Editada com sucesso com Sucesso, deseja editar mais alguma coisa? (1/0)\n");
 						        scanf("%d",&repete);
 					        	  switch (repete){
 					        	  	case 1:
@@ -499,14 +499,14 @@ int main (){
 
 								default:
 
-								printf("\tDigite uma opção Valida");
+								printf("\tDigite uma opÃ§Ã£o Valida");
 
 								  }
 					  	    	break;
 					  	   	case 4:
 					  	   		printf("Nova Localizao: ");
 					  	   		scanf("%[^\n]",clientes[i].morada);
-					  	   			printf( "\tOBS: Informação Editada com sucesso com Sucesso, deseja editar mais alguma coisa? (1/0)\n");
+					  	   			printf( "\tOBS: InformaÃ§Ã£o Editada com sucesso com Sucesso, deseja editar mais alguma coisa? (1/0)\n");
 						        scanf("%d",&repete);
 					        	  switch (repete){
 					        	  	case 1:
@@ -517,7 +517,7 @@ int main (){
 
 								default:
 
-								printf("\tDigite uma opção Valida");
+								printf("\tDigite uma opÃ§Ã£o Valida");
 
 								  }
 
