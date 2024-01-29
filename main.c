@@ -1,410 +1,566 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <locale.h>
-#include <stdbool.h>
-#include <string.h>
+#include<stdio.h>
+#include<stdlib.h>
+#include<locale.h>
+#include<string.h>
+#include<stdbool.h>
+#include<time.h>
+
+//__Cristovão e Jorge
+
+FILE *ficheiro;
+
+void mostrar_data ()
+{
+	time_t t=time(NULL);
+	struct tm tm=*localtime(&t);
+	int ano=tm.tm_year+1900;
+	printf(" %02d/%02d/%04d  %02d:%02d:%02d\n", tm.tm_mday, tm.tm_mon+1 ,ano, tm.tm_hour,tm.tm_min);
+
+}
+typedef struct conta
+{
+	int numero_conta,codigo_cliente;
+	char *estado;
+	float saldo;
 
 
+}conta;
 
-typedef struct contas{
-    char numero_de_conta[200];
-    float saldo;
-    int estadoDaConta;
 
-}contas;
+typedef struct pessoa
+{
+	int codigo_cliente,telefone,idade,tipo_cliente;
+	char nome[100],morada[100],bi[22],nif[25];
 
-typedef struct pessoa{
-    char nome[200];
-    char nif[17];
-    int telefone;
-    int codigo;
-    contas conta;
 }pessoa;
-    FILE *backup;
-    pessoa p;
-    int id = 0;
-    pessoa cliente[1000];
-    //char numConta[200];
-    char numConta[24] = "20232024000";
-    char novo [200];
-
-void restaurar_Ficheiro();
-
-bool Authentication(char login, char senha){
-    bool guardado = false;
-
-        if(strcmp(login, "Admin") == 0 && strcmp(senha, "123456") == 0){
-            return true;
-        }
-        else{
-          return false;
-        }
+void continuar (){
+	char d;
+	printf("\t\n Digite qualquer tecla para continuar: ");
+	scanf("%s",&d);
 }
-void Menu(){
-    system ("color 1f");
-    printf("-------------------------------------------------------------\n");
-	printf("Seja Bem-vindo ao Sistema Integrado de Gestão XPTO do BAI \n            BAI Confiança no Futuro           \n");
-	printf ("------------------------------------------------------------\n");
-	printf ("                        MENU DE OPÇÕES                      \n");
-	printf( "------------------------------------------------------------\n");
-	printf( "(1)- Cadastrar Clientes \n");
-	printf( "(2)- Listar Clientes    \n");
-	printf( "(3)- Abertura de Conta  \n");
-	printf( "(4)- Levantar Dinheiro  \n");
- 	printf( "(5)- Transferir Dinheiro\n");
-	printf( "(6)- Depositar Dinheiro \n");
-	printf( "(7)- Consultar Saldo    \n");
-	printf( "(8)- Actualizar Dados   \n");
-	printf( "(00)- ** Sair do sistema   \n");
-	printf( "Escolha Uma Opção \n Opção: ");
-
-
+void cabecalho (){
+	printf("\t\n-----------------------------------------------------------");
+	printf("\t\t\n SISTEMA DE GESTÃO BANCO BAI \n\tBAI CONFIANÇA NO FUTURO ");
+	 mostrar_data();
+	printf("\t\n-------------------------------------------------------\t\n");
 }
-bool cadastrar_cliente(pessoa p){
-    p.conta.estadoDaConta = 0;
-    cliente[id-1].codigo = id;
-    strcpy(cliente[id-1].nome, p.nome); //O comando strcpy serve para atribuir conteúdo de uma string para outra
-    strcpy(cliente[id-1].conta.numero_de_conta, "Não tem Conta");
-    printf ("Codigo: %d\nNome: %s\nNº de conta: %s\n", cliente[id-1].codigo, cliente[id-1].nome, cliente[id-1].conta.numero_de_conta);
-    system ("pause");
+void menu (){
 
-    return true;
-}
-int AberturaDeConta(pessoa p, int cod){
-       cliente[cod-1].conta.estadoDaConta = 1;
-       cliente[cod-1].conta.saldo = 20000.00;
-       char cof[13];
-       cliente[cod-1].codigo= cod;
-       snprintf(novo, 24, "%s%d", numConta, cod);
-       strcpy (cliente[cod-1].conta.numero_de_conta, novo);
-       printf("Codigo:%d \n",cliente[cod-1].codigo );
-       printf("Nome:%s \n",cliente[cod-1].nome );
-       printf("Numero de Conta:%s \n",cliente[cod-1].conta.numero_de_conta );
-}
-
-int listar_clientes(pessoa w){
-   cliente[id] = w;
-   printf("===========   Lista de clientes  ============ \n\n");
-   if (id == 0){
-       cliente[id].codigo = 0;
-       cliente[id].conta.saldo = 0;
-       strcpy (cliente[id].nome, "0" );
-       printf ("Codigo do cliente: %d\n",cliente[id].codigo );
-       printf ("Nome: %s\n", cliente[id].nome);
-       printf ("Nº de conta: %s\n\n", cliente[id].conta.numero_de_conta);
-       printf ("Saldo: %2f\n", cliente[id].conta.saldo);
-   }
-   else {
-     for (int t = 0; t  <= id-1; t++){
-       cliente[t].codigo = t + 1;
-       printf ("Codigo do cliente: %d\n",cliente[t].codigo);
-       printf ("Nome: %s\n", cliente[t].nome);
-       printf ("Nº de conta: %s\n\n", cliente[t].conta.numero_de_conta);
-       printf ("Saldo da conta: %2f\n", cliente[t].conta.saldo);
-       cliente[t].codigo++;
-   }
-   }
-return id;
-}
-int comparation(pessoa k){
-    for (int n=0; n <= id -1; n++){
-    if(strcmp(k.conta.numero_de_conta, cliente[n].conta.numero_de_conta)== 0){
-        return n;
-    }
+	printf(" \t\n (1)-cadastrar clientes \t\n (2)-Listar Clientes clientes \t\n (3)-Abertura de Conta  \t\n (4)-Depositar Dinheiro \t\n (5)-Levantar Dinheiro\t\n (6)-Consultar Saldo\t\n (7)-Transfeir Dinheiro \t\n (8)-Atualizar Dados \t\n (9)-Terminar Sessão \t\n Escolha uma opcao:");
 
 }
 
+conta contas[1000];
+pessoa clientes[1000];
+FILE *backup;
+int Total_Cli=0, totalContas=0;
+
+bool CadastrarClientes (pessoa p) {
+	conta c;
+	clientes[Total_Cli] = p;
+	contas[Total_Cli].codigo_cliente=p.codigo_cliente;
+	contas[Total_Cli].numero_conta = 0;
+	contas[Total_Cli].estado= "Inactiva";
+	Total_Cli = Total_Cli + 1;
+	return true;
+}
+void Listar_Clientes (){
+	for (int i=0; i<=Total_Cli-1; i++){
+		if (contas[i].numero_conta==0){
+
+			if (clientes[i].tipo_cliente==0){
+				printf("\t\nCodigo:%d ",clientes[i].codigo_cliente);
+				printf("\nNome:%s ",clientes[i].nome);
+				printf("\nNº DE Identificacao (B.I):%s",clientes[i].bi);
+				printf("\nTelefone: %d",clientes[i].telefone);
+				printf("\nIdade:%d ", clientes[i].idade);
+				printf("\nMorada:%s ",clientes[i].morada);
+
+			}
+			else {
+				printf("\t\nCodigo:%d ",clientes[i].codigo_cliente);
+				printf("\nNome Empresa:%s ",clientes[i].nome);
+				printf("\nIdentificacao NIF:%s ",clientes[i].nif);
+				printf("\nTelefone: %d",clientes[i].telefone);
+				printf("\nLocalizacao:%s ",clientes[i].morada);
+			}
+
+
+		}
+		else {
+			if (clientes[i].tipo_cliente==0){
+
+				printf("\t\nCodigo:%d ",clientes[i].codigo_cliente);
+				printf("\nNome:%s ",clientes[i].nome);
+				printf("\nIdentificacao:%s ",clientes[i].bi);
+				printf("\nTelefone: %d",clientes[i].telefone);
+				printf("\nIdade:%d ", clientes[i].idade);
+				printf("\nMorada:%s ",clientes[i].morada);
+				printf("\nNumero de conta: %d ",contas[i].numero_conta);
+				printf("\nSaldo:%.2f ", contas[i].saldo);
+				printf("\nEstado da Conta: %s ",contas[i].estado);
+			}
+			else{
+
+				printf("\t\nCodigo:%d ",clientes[i].codigo_cliente);
+				printf("\nNome Empresa:%s",clientes[i].nome);
+				printf("\nIdentificacao NIF:%s ",clientes[i].nif);
+				printf("\nTelefone: %d",clientes[i].telefone);
+				printf("\nLocalizacao:%s ",clientes[i].morada);
+			}
+
+	 	}
+
+		}
+	printf("\n=========================================================\n");
+	}
+
+int Verification_ID_Cliente (int id){
+	for (int i=0; i<=Total_Cli-1; i++){
+		if (id==clientes[i].codigo_cliente)
+		return i;
+
+	}
+	return -1;
+}
+bool abertura_de_conta (pessoa p, int tipo_conta) {
+
+
+
+	conta c;
+
+
+	c.numero_conta = 20232024 + p.codigo_cliente;
+	c.saldo = 0.0;
+	c.estado="Nao activo";
+	contas[totalContas] = c;
+
+	totalContas++;
+
+	return true;
+
+}
+int Verification_conta (int c){
+	for (int i=0; i<=totalContas-1; i++){
+		if (c==contas[i].numero_conta){
+			return i;
+		}
+
+	}
+	return -1;
+}
+bool depositar (int num_conta,float montante){
+	int	i=Verification_conta(num_conta);
+
+				if (i==-1){
+					printf("Conta invalida");
+					return false;
+				}
+
+
+				contas[i].saldo=contas[i].saldo+montante;
+				contas[i].estado="Activo";
 
 
 }
-void Depositar(char n, float quantia, int cod){
-for (int i=0; i < cod; n++){
-       if(cliente[i].codigo == cod){
+bool Levantar (int num_conta,float montante){
+	int	i=Verification_conta(num_conta);
 
-            if(cliente[i].conta.saldo  > quantia){
-            cliente[i].conta.saldo -= quantia;
-            printf("Levantamento feito com sucesso \nSaldo actual: %2.2f", cliente[i].conta.saldo);
-            system ("pause");
-            return true;
-            }
-       }
-    }
-}
-
-bool levantar_dinheiro(char k, float quantia,int cod){
-printf ("Numero de conta: %s", cod);
-system ("pause");
-for (int n=0; n <= id -1; n++){
-       if(strcmp(cliente[n].conta.numero_de_conta, k)==0){
-
-            if(cliente[n].conta.saldo  > quantia){
-            cliente[n].conta.saldo -= quantia;
-            printf("Levantamento feito com sucesso \nSaldo actual: %2.2f", cliente[n].conta.saldo);
-            system ("pause");
-            return true;
-            }
-            else {
-            printf ("/!\\ O saldo não é suficiente para realizar essa operação");
-            system ("pause");
-            return false;
-            }
+				if (i==-1){
+					printf("Conta invalida");
+					return false;
+				}
+				else{
+					if (montante>contas[i].saldo){
+		            printf("Montante indisponivel de ser sacado.");
+		            return false;
+			     	}
+				}
 
 
-       }
-       else {
-        printf("Erro");
-        return false;
-       }
+				contas[i].saldo=contas[i].saldo-montante;
 
-return false;
+
 
 }
-}
 
-int Transferencia(char num, float vlor, int clicod){
-for ()
-return 0;
-}
-int actualizacao_de_dados(pessoa p, int id){
+float consultar (int num_conta){
+	 	int	i=Verification_conta(num_conta);
 
-return 0;
-}
+				if (i==-1){
+					printf("Conta invalida");
+					return false;
+				}
+		return contas[i].saldo;
 
-int consulta_de_saldo(){
+  }
 
-}
-bool Verification(int cod){
+bool	transferir_dinheiro (int num_conta1,int num_conta2,float montante) {
+   		int	i=Verification_conta(num_conta1);
+   		int j=Verification_conta(num_conta2);
 
-        for (int t= 0; t <= id; t++){
-            if (cod == cliente[t].codigo){
-                return true;
-            }
-        }
-}
-bool vclient_ja_conta(int cod){
-    if (cliente[cod-1].conta.estadoDaConta == 1){
+				if ((i==-1)||(j==-1)){
+					printf("Conta invalida");
+					return false;
+				}
+				if (contas[i].saldo<contas[j].saldo){
+					printf("Porfavor, consulte o seu saldo");
+				}
+				else {
+					contas[i].saldo=contas[i].saldo-montante;
+					contas[j].saldo=contas[j].saldo+montante;
+
+				}
+
+
+				contas[i].saldo=contas[i].saldo+montante;
+
+ }
+bool Authentication(char login[10], char senha[10]){
+
+    if (strcmp(login, "Lukau")== 0 && strcmp(senha, "111610")== 0 ){
         return true;
     }
     else{
         return false;
     }
+ }
 
-}
-void backup_dos_dados();
 
-int cod;
-
-int main ()
-{
-    int opcao, opcao1, opcao2, opcao3, op1;
-    id = 0;
-    int    tentativas = 3;
-    float quantia;
-    char login[10], senha[10];
-    int resp;
-    setlocale(LC_ALL, "portuguese");
-    do{
-        printf ("Digite o seu login: \n");
-        scanf("%s[^\n]", login);
-        printf ("Digite a sua senha: \n");
+int main (){
+	setlocale(LC_ALL,"portuguese");
+	int opcao;
+	pessoa p;
+	int tentativas = 3;
+	char login[10], senha[10];
+    bool A;
+	do{
+        printf("\t\n        BAI CONFIANÇA NO FUTURO              ");
+        printf("\n\tLogin:    ");
+        fflush(stdin);
+        scanf("%s", login);
+        printf("\n\tSenha:    ");
         scanf("%s", senha);
-        bool A = Authentication(login, senha);
-       if(A == true){
-    do{
-
-        Menu();
-        scanf("%d%*c", &opcao);
+        tentativas--;
         system ("cls");
+	bool A = Authentication(login, senha);
+	if (A == true){
+	do {
+	   system("color f9");
+		cabecalho();
+     	menu ();
+		scanf("%d",&opcao);
+		system ("cls");
 
-        switch(opcao){
-            case 1:
-                do{
-                printf( "(1)Cadastrar novo cliente \n");
-                printf( "(2) Voltar para menu principal\n");
-                scanf("%d%*c", &opcao1);
-                }while (opcao1 != 1 && opcao1 != 2);
-                system ("cls");
-                switch(opcao1)
-                {
-                    case 1:
-                        do{
-                            id++;
-                            do{
-                                printf( "\n\t         Ficha de Cadastro do Cliente          \n");
-                                printf( "\nCódigo do cliente: AO000 %d", id, "\n");
-                                printf( "\nNome: ");
-                                scanf("%[^\n]%*c",p.nome);/*a expressão %*c serve para limpar o buffer*/
-                                system ("cls");
-                                do{
-                                    printf( "\nCódigo do cliente: AO000 %d", id, "\n");
-                                    printf("\nNome: %s \n",p.nome);
-                                    printf("\n1-salvar dados digitados \n2-Editar dados\nR:");
-                                    scanf("%d%*c", &opcao2);
-                                    system("cls");
-                                }while(opcao2 != 1 && opcao2 != 2);
-                            }while (opcao2 != 1);
-                            cadastrar_cliente(p);
-                            system ("cls");
+		switch (opcao){
 
-                            printf ( "\t\t\n\n            CADASTRADO COM SUCESSO|O|   \n" );
-                            system("pause");
-                            system ("cls");
-                            do{
-                                printf("\n1-cadastrar um novo cliente \n2-Voltar ao Menu\n");
-                                scanf("%d%*c", &opcao3);
-                                system ("cls");
+			case 1:
 
-                              }while (opcao3!= 1 && opcao3 != 2);
+				p.codigo_cliente = Total_Cli + 1;
+			    system ("cls");
+			  	cabecalho();
+				printf("\t\n==================Cadstrar cliente===============\t\n");
+				printf(" Marque:   \n0-Cliente particular  \n1-Cliente Empresarial: ");
+				scanf("%d",&p.tipo_cliente);
+				if (p.tipo_cliente==0){
 
-                        }while (opcao3 == 1);
+						printf("\t\ncodigo: %d\n",p.codigo_cliente);
+						printf(" Nome: ");
+					    fflush(stdin);
+						scanf("%[^\n]",p.nome);
+						printf(" Nº Identificacao do BI: ");
+						fflush(stdin);
+						scanf("%[^\n]",p.bi);
+						printf(" Telefone: ");
+						scanf("%d",&p.telefone);
+						printf(" Idade: ");
+						scanf("%d",&p.idade);
+						printf(" Morada: ");
+						 fflush(stdin);
+						scanf("%[^\n]",p.morada);
+				}
+				else {
 
-                      }
+						printf("\t\ncodigo: %d\n",p.codigo_cliente);
+						printf(" Nome Empresa: ");
+					    fflush(stdin);
+						scanf("%[^\n]",p.nome);
+						printf(" Identificacao NIF: ");
+						fflush(stdin);
+						scanf("%[^\n]",p.bi);
+						printf("Tel: ");
+						scanf("%d",&p.telefone);
+						printf(" Localizacao: ");
+						 fflush(stdin);
+						scanf("%[^\n]",p.morada);
 
-            break;
-            case 2:
-                do{
-                printf(" ");
-                listar_clientes(p);
-                system ("pause");
-                system ("cls");
-
-                }while(1);
-            break;
-
-            case 3:
-
-                    do{
-                        printf ("\t\t================ Abertura de Conta =================\n\n");
-                        printf("1-Abrir conta \n2-voltar ao Menu");
-                        scanf("%i%*c", &opcao1);
-                        system ("cls");
-                    }while (opcao1 != 1 && opcao1 != 2);
-                     switch (opcao1){
-                   case 1:
-                       do{
-                           printf ("Pretente efetuar a abertura de uma: \n0-Conta Empresarial \n1-Conta particular \n");
-                           scanf ("%i%*c", &op1);
-                           system ("cls");
-                        }while(op1 != 0 && op1 != 1);
-                                   int cod;
-                        printf ("\nDigite o código do cliente que pretende efetuar a abertura:  \n");
-                        scanf("%d", &cod);
-                            Verification(cod);
-                            if (Verification(cod)== true){
-                                vclient_ja_conta(cod);
-                                if (vclient_ja_conta(cod) == false){
-                                    AberturaDeConta(p, cod);
-                                }
-                                else{
-                                    system ("cls");
-                                    printf("O codigo digitado ja tem uma conta associda \n");
-                                }
-
-                            }
-                            else
-                            {
+				}
 
 
-                                    do{
-                                    printf ("/!\\Não foi encontrado nenhum cliente com esse codigo \n");
-                                    printf ("1-Voltar para cadastrar o clinte \n2-Digitar novamente o codigo \nR:");
-                                    scanf ("%i%*c", resp);
-                                    system ("cls");
-                                    }while (resp != 1 && resp != 2);
-                            }
-
-
-                    break ;
-
-                     }
-
-
-            break;
-            case 4:
-
-                printf("\n========== Depositar ==============\n");
-                printf("\nDigite o codigo do cliente: ");
-                scanf("%d", &cod);
-                printf("\nDigite o numero de conta do cliente: ");
-                scanf("%s%*c", &numConta);
-                printf("\nDigite o montante cliente: ");
-                scanf("%2.f", &quantia);
-
-
-
-                Depositar(numConta, quantia, cod);
-
-            break;
-
-            case 5:
-
-                printf ("\n\t============== Levantar Dinheiro  =============\n");
-                printf ("Digite o numero de conta: \n");
-                scanf("%s%*c", numConta);
-                printf ("Digite a quantia que pretende levantar: ");
-                scanf("%2f%*c", quantia);
-                printf("\nDigite o codigo do cliente: ");
-                scanf("%d", &cod);
-
-                levantar_dinheiro(numConta, quantia, cod);
-            break;
-            case 6:
-                printf ("\n\t============== Transferência  =============\n");
-                printf ("Digite o numero de conta: \n");
-                scanf("%s%*c", numConta);
-                printf ("Digite a quantia que pretende levantar: ");
-                scanf("%2f%*c", &quantia);
-                printf("\nDigite o codigo do cliente: ");
-                scanf("%d", &cod);
-                Transferencia(numConta, quantia, cod);
+			    CadastrarClientes(p);
+			    printf("\n\t  Cadastrado com sucesso \n");
+			    system("pause");
+			    system("cls");
                 break;
-            case 7:
-                printf ("\n\t============== Actualizacão dos dados  =============\n");
-                printf ("Digite o numero de conta: \n");
-                scanf("%s%*c", numConta);
-                printf("\nDigite o codigo do cliente: ");
-                scanf("%d", &cod);
-                bool V = Verification(cod);
-                if (V == true){
-                actualizacao_de_dados(p, cod);
-                break;
-                }
-                else{
-                  printf ("Não Existe cliente com este codigo");
-                  exit(1);
-                  break;
-                }
-                break;
-            case 8:
-                printf ("\n\t============= Restaurar Ficheiro  =============\n");
-                restaurar_Ficheiro();
-            break;
-            case 9:
-                printf ("\n\t============== Backup do sistema  =============\n");
-                backup_dos_dados();
-            break;
-            default:
-            exit(2);
-            break;
-        }
+
+			case 2:
+				    system ("cls");
+				    printf("\t\n==================Listar_Clientes cliente===========\t\n");
+				    Listar_Clientes();
+				    system("pause");
+				    system ("cls");
+
+					break;
+			case 3:
+
+			   system ("cls");
+			   int codigo;
+
+			   printf( "Digite o seu codigo pessoal: ");
+			   scanf("%d",&codigo);
 
 
 
-    }while (opcao != 0);
+			   	int i =Verification_ID_Cliente(codigo);
+			   	if (i==-1){
+
+			   	printf( "O seu codigo pessoal esta incorreto ");
+
+				   }
+
+			   else {
+						int tconta;
+						printf( "Insira o tipo de conta 0 para particular ou 1 para empresarial: ");
+						scanf("%d",&tconta);
+							if (clientes[i].tipo_cliente!=tconta){
+		                         printf("Tipo de conta incompativel para este cliente");
+	                        }
+
+						   else {
+						        abertura_de_conta(clientes[i], tconta);
+						        system("cls");
+						        cabecalho();
+							    printf("Conta aberta com sucesso \n");
+							    printf(" Faca  seu primeiro depoito para activar a sua conta ");
+							    Sleep(1);
+							    Listar_Clientes ();
+							    system ("pause");
+							}
+
+				  }
+
+					break;
+			case 4:
+                printf("========= Depositar Dinheiro =========\n");
+				float montante;
+				int c;
+				printf(" Digite o numero de conta:");
+				scanf("%d",&c);
+			    printf("Digite o montante: ");
+				scanf("%f",&montante);
+				depositar(c,montante);
+			    printf("\t\nOperacao realizada com sucesso\n");
+				break;
+
+
+			case 5:
+				printf("=========Levantar Dinheiro=========\n");
+				float v;
+				int n_conta;
+
+				printf(" Digite o numero de conta:");
+				scanf("%d",&n_conta);
+			    printf("Digite o montante a levantar: ");
+				scanf("%f",&v);
+				Levantar(n_conta,v);
+			    printf("\t\nOperacao realizada com sucesso\n");
+				break;
+
+			case 6:
+				printf("=========Consultar Saldo da Conta=========\n");
+				int cc;
+				printf(" Digite o numero de conta:");
+				scanf("%d",&cc);
+			    printf("Saldo Actual: %.3f",consultar(cc));
+				break;
+
+			case 7:
+				printf("=========Transferencia dinheiro =========\n");
+
+				float saldo;
+				int c1,c2;
+
+				printf(" Digite o seu numero de conta:");
+				scanf("%d",&c1);
+				printf(" Digite o numero de conta do Destinatário:");
+				scanf("%d",&c2);
+			    printf("Digite o montante: ");
+				scanf("%f",&saldo);
+				transferir_dinheiro (c1,c2,saldo);
+			    printf("\t\nOperacao realizada com sucesso\n");
+				break;
+
+			case 8:
+
+				printf("=========Atualizar dados do cliente =========\n");
+
+				int option;
+
+				do {
+
+	                 int codigo;
+				     printf( "Digite o seu codigo pessoal: ");
+				     scanf("%d",&codigo);
+				   	 int i =Verification_ID_Cliente(codigo);
+				   	 if (i==-1){
+
+                        printf( "O seu codigo pessoal esta incorreto ");
+                        break;
+				    }
+
+				    else{
+
+						if (clientes[i].tipo_cliente==0){
+
+							printf("\t\nCodigo:%d ",clientes[i].codigo_cliente);
+							printf("Nome:%s ",clientes[i].nome);
+							printf("Identificacao BI:%s",clientes[i].bi);
+							printf("Telefone: %d",clientes[i].telefone);
+							printf("Idade:%d ", clientes[i].idade);
+							printf("Morada:%s ",clientes[i].morada);
+
+						}
+						else {
+
+							printf("Codigo:%d ",clientes[i].codigo_cliente);
+							printf("Nome Empresa:%s ",clientes[i].nome);
+							printf("Identificacao NIF:%s ",clientes[i].nif);
+							printf("Telefone: %d",clientes[i].telefone);
+							printf("Localizacao:%s ",clientes[i].morada);
+						}
+							}
+
+					 printf("\tEscolha o campo que deseja editar:\n\n\t1-Nome/Designacao\n\t2-NIF/BI\n\t3-Contacto Telefonico\n\t4-Localizacao\n\t5-Voltar ao menu \n");
+					 int repete;
+					 scanf("%d",&option);
+					 switch (option){
+					  	    case 1:
+
+					  	    	printf("novo nome: ");
+					  	    	 fflush(stdin);
+					  	    	scanf("%[^\n]",clientes[i].nome);
+					  	    	printf( "\tOBS: Informação Editada com sucesso com Sucesso, deseja editar mais alguma coisa? (1/0)\n");
+						        scanf("%d",&repete);
+					        	  switch (repete){
+					        	  	case 1:
+								     	option=5;
+									break;
+							           case 2:
+							       	break;
+
+								default:
+
+								printf("\tDigite uma opção Valida");
+
+								  }
+
+					  	    		break;
+					  	    case 2:
+					  	    	printf(" Novo BI/NIF: ");
+					  	    	fflush(stdin);
+					  	    	scanf("%[^\n]",clientes[i].bi);
+					  	    	printf( "\tOBS: Informação Editada com sucesso com Sucesso, deseja editar mais alguma coisa? (1/0)\n");
+						        scanf("%d",&repete);
+					        	  switch (repete){
+					        	  	case 1:
+								     	option=5;
+									break;
+							           case 2:
+							       	break;
+
+								default:
+
+								printf("\tDigite uma opção Valida");
+
+								  }
+					  	      	break;
+
+					  	    case 3:
+					  	    	printf("Novo contacto: ");
+					  	    	scanf("%d",&clientes[i].telefone);
+					  	    		printf( "\tOBS: Informação Editada com sucesso com Sucesso, deseja editar mais alguma coisa? (1/0)\n");
+						        scanf("%d",&repete);
+					        	  switch (repete){
+					        	  	case 1:
+								     	option=5;
+									break;
+							           case 2:
+							       	break;
+
+								default:
+
+								printf("\tDigite uma opção Valida");
+
+								  }
+					  	    	break;
+					  	   	case 4:
+					  	   		printf("Nova Localizao: ");
+					  	   		scanf("%[^\n]",clientes[i].morada);
+					  	   			printf( "\tOBS: Informação Editada com sucesso com Sucesso, deseja editar mais alguma coisa? (1/0)\n");
+						        scanf("%d",&repete);
+					        	  switch (repete){
+					        	  	case 1:
+								     	option=5;
+									break;
+							           case 2:
+							       	break;
+
+								default:
+
+								printf("\tDigite uma opção Valida");
+
+								  }
+
+					  	   	case 5:
+
+					  	   		break;
+					  	   	default:
+					  	   		break;
+
+					  	   		printf("opcao invalida\n");
+
+				         }
+
+
+
+
+				}while (option!=5);
+
+
+		default:
+
+			 	break;
+
+              }
+
+	   } while (opcao!=9);
+	   }
+	   else {
+          printf ("\n  Senha ou Login errado      ");
+          system ("pause");
+          system ("cls");
+	   }
+	}while (tentativas != 0 || A == false );
+    printf("Programa Bloqueado !!! \nForam feitas tentativas demais\n");
+	system ("pause");
+	return 0;
 }
-    else {
-       tentativas--;
-       if(tentativas == 0){
-        exit(1);
-        }
-    }
-    }while(tentativas == 0);
-}
+
 
 void restaurar_Ficheiro(){
 
     backup = fopen("backupIsaf.txt", "r");
-     fscanf(backup, "%s", p.nome);
+     fscanf(backup, " ");
 
     fclose (backup);
 
@@ -413,7 +569,7 @@ void restaurar_Ficheiro(){
 void backup_dos_dados(){
     backup = fopen("backupIsaf.txt", "w");
 
-    fprintf(backup, "%s", p.nome);
+    fprintf(backup, " ");
 
     fclose (backup);
 
